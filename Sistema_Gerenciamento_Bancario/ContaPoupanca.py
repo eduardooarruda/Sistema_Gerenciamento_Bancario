@@ -2,8 +2,8 @@ import datetime
 from Conta import Conta
 
 class ContaPoupanca(Conta):
-    def __init__(self, nome, cpf, endereco, senha, checkEspecial):
-        super().__init__(nome, cpf, endereco, senha, checkEspecial)
+    def __init__(self):
+        super().__init__()
         #A taxa corresponde a 0,017% por dia
         self._taxa = 0.00017
     
