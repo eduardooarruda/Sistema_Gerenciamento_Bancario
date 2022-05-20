@@ -1,5 +1,4 @@
 from tkinter import messagebox
-from click import command
 from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
@@ -167,12 +166,37 @@ class App:
     def __validar_endereco(self, estado, cidade, bairro, rua, numero):
         endereco = Endereco(estado, cidade, bairro, rua, numero)
         self.__conta.setEndereco(endereco)
+        # self.__tela_endereco.destroy()
+        self.__adicionar_senha()
+        # print(self.__conta.getEndereco.getEstado)
+        # print(self.__conta.getEndereco.getCidade)
+        # print(self.__conta.getEndereco.getBairro)
+        # print(self.__conta.getEndereco.getRua)
+        # print(self.__conta.getEndereco.getNumero)
+    
+    def __adicionar_senha(self):
+        self.__tela_senha = Tk()
+        self.__tela_senha.title("Senha")
+        self.__tela_senha.geometry("250x270+610+153")
+        self.__tela_senha.configure(background=self.__cor_indigo)
+        self.__tela_senha.resizable(width=False, height=False)
 
-        print(self.__conta.getEndereco.getEstado)
-        print(self.__conta.getEndereco.getCidade)
-        print(self.__conta.getEndereco.getBairro)
-        print(self.__conta.getEndereco.getRua)
-        print(self.__conta.getEndereco.getNumero)
+        label_senha = Label(self.__tela_senha, text='Senha:*', font=('Ivy 11'), bg=self.__cor_indigo, fg=self.__cor_branco)
+
+
+        label_obs_senha = Label(self.__tela_senha, text='OBS: A senha deve conter 8 caractecres', font=('Ivy 8'), bg=self.__cor_indigo, fg=self.__cor_branco )
+
+        input_senha = Entry(self.__tela_inf_pessoais)
+
+        btn_proximo = Button(self.__tela_endereco, text='Próximo', font=('Ivy 11'))
+
+        label_senha.grid(row=0, sticky=W)
+        label_obs_senha.grid(row=1, sticky=W)
+        input_senha.grid(row=2, sticky=W)
+        btn_proximo.grid(row=3)
+
+        
+
 app = App()
 
 app.menu_inicial()

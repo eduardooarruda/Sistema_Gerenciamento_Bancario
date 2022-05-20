@@ -1,5 +1,5 @@
 from random import randrange
-
+from Endereco import Endereco
 
 class Conta:
     def __init__(self):
@@ -9,7 +9,7 @@ class Conta:
         self.__valorChequeEspecial = None
         self.__nome = None
         self.__cpf = None
-        self.__endereco = None
+        self.__endereco = Endereco()
         self.__senha = None
         self.__chequeEspecial = None
         
@@ -60,6 +60,8 @@ class Conta:
         return self.__nome
     
     def setNome(self, nome):
+        if nome == '':
+            return False
         self.__nome = nome
         return True
         
