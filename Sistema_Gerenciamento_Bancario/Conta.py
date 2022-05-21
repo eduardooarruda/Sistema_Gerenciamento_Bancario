@@ -1,5 +1,6 @@
 from random import randrange
 from Endereco import Endereco
+import datetime
 
 class Conta:
     def __init__(self):
@@ -9,6 +10,7 @@ class Conta:
         self.__chequeEspecial = False
         self.__valorChequeEspecial = 0
         self.__endereco = Endereco()
+        self.__data_criacao = datetime.date.today()
         self.__nome = None
         self.__cpf = None
         self.__senha = None
@@ -21,8 +23,7 @@ class Conta:
         id = 5859
         dv = randrange(1,10)
         numero = '0' * (8 - len(str(id))) + str(id) + '-' + str(dv)
-        self.__numero = numero
-        return True
+        return numero
 
     @property    
     def getSaldo(self):
@@ -124,6 +125,9 @@ class Conta:
         self.__valorChequeEspecial = valor
         return True
 
+    @property
+    def getDataCriacao(self):
+        return self.__data_criacao
     
                 
                 

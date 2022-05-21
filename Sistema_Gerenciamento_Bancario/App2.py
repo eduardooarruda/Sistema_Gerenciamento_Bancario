@@ -1,7 +1,8 @@
 from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
-
+from BancoDeDados.criarBanco import session, Conta as ContaDB, Extrato as ExtratoDB
+# from sqlalchemy.orm import sessionmaker
 import PySimpleGUI as sg
 sg.theme('DarkAmber')
 
@@ -118,8 +119,8 @@ class App:
         sentenca_estado = self.conta.getEndereco.setEstado(estado)
         sentenca_bairro = self.conta.getEndereco.setBairro(bairro)
         sentenca_cidade = self.conta.getEndereco.setCidade(cidade)
-        sentenca_rua = self.conta.getEndereco.setEstado(rua)
-        sentenca_numero = self.conta.getEndereco.setEstado(numero)
+        sentenca_rua = self.conta.getEndereco.setRua(rua)
+        sentenca_numero = self.conta.getEndereco.setNumero(numero)
        
 
         if sentenca_estado == False:
@@ -215,7 +216,54 @@ class App:
                         self.conta.setValorCheckEspecial(500)
                     
                     #Gravar no Banco
-                    print("Dados foram gravados")
+                    # try:
+                    # gravarConta = ContaDB(
+                    #     numeroConta = self.conta.getNumero,
+                    #     saldo = self.conta.getSaldo,
+                    #     agencia = self.conta.getAgencia,
+                    #     chequeEspecial = self.conta.getChequeEscpecial,
+                    #     valorChequeEspecial = self.conta.getValorChequeEspecial, 
+                    #     nome = self.conta.getNome,
+                    #     cpf = self.conta.getCpf,
+                    #     senha = self.conta.getSenha,
+                    #     estado = self.conta.getEndereco.getEstado,
+                    #     cidade = self.conta.getEndereco.getCidade,
+                    #     bairro = self.conta.getEndereco.getBairro,
+                    #     rua = self.conta.getEndereco.getRua,
+                    #     numeroEndereco = self.conta.getEndereco.getNumero,
+                    #     data_criacao = self.conta.getDataCriacao,
+                    #     data_atualizacao_rendimento_poupanca = self.conta.getDataCriacao
+                    # )
+
+                    gravarConta = ContaDB()
+
+                    gravarConta.nome = self.conta.getNome
+                    
+
+                    print(f'self.conta.getNumero: {self.conta.getNumero}')
+                    print(f'self.conta.getSaldo : {self.conta.getSaldo}')
+                    print(f'self.conta.getAgencia : {self.conta.getAgencia}')
+                    print(f'self.conta.getChequeEscpecial : {self.conta.getChequeEscpecial}')
+                    print(f'self.conta.getValorChequeEspecial : {self.conta.getValorChequeEspecial}')
+                    print(f'self.conta.getNome : {self.conta.getNome}')
+                    print(f'self.conta.getCpf : {self.conta.getCpf}')
+                    print(f'self.conta.getSenha : {self.conta.getSenha}')
+                    print(f'self.conta.getEndereco.getEstado : {self.conta.getEndereco.getEstado}')
+                    print(f'self.conta.getEndereco.getCidade : {self.conta.getEndereco.getCidade}')
+                    print(f'self.conta.getEndereco.getBairro : {self.conta.getEndereco.getBairro}')
+                    print(f'self.conta.getEndereco.getRua : {self.conta.getEndereco.getRua}')
+                    print(f'self.conta.getEndereco.getNumero: {self.conta.getEndereco.getNumero}')
+                    print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
+                    print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
+
+                    session.add(gravarConta)
+                    session.commit()
+
+                    #     sg.Popup('Dados foram gravados')
+                    # except:
+                    #     sg.Popup('Error')
+
+                   
                     self.run()
 
                     break
