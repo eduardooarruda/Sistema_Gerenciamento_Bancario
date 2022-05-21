@@ -6,12 +6,12 @@ class Conta:
         self.__numero = self.__criarNumero()
         self.__saldo = 0
         self.__agencia = '039'
-        self.__valorChequeEspecial = None
+        self.__chequeEspecial = False
+        self.__valorChequeEspecial = 0
+        self.__endereco = Endereco()
         self.__nome = None
         self.__cpf = None
-        self.__endereco = Endereco()
         self.__senha = None
-        self.__chequeEspecial = None
         
     @property
     def getNumero(self):
@@ -108,6 +108,9 @@ class Conta:
     @property
     def getChequeEscpecial(self):
         return self.__checkEspecial
+
+    def setChequeEscpecial(self, sentenca):
+        self.__checkEspecial = sentenca
     
     @property
     def getValorChequeEspecial(self):
@@ -115,7 +118,7 @@ class Conta:
 
 
     def setValorCheckEspecial(self, valor):
-        if valor < 0:
+        if valor < 0 or type(valor) != int:
             return False
         
         self.__valorChequeEspecial = valor

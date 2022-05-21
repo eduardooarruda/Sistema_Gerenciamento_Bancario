@@ -54,6 +54,39 @@ class AppTela:
         ]
         self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
+    
+    def tela_senha_chequeEspecial(self):
+        self.layout = [
+            [sg.Text('Senha:*')],
+            [sg.Text('OBS: A senha deve conter pelo menos 8 caracteres')],
+            [sg.Input(key='senha', password_char='*')],
+            [sg.Text('Cheque Especial:*')],
+            [sg.Radio('Sim', 'cheque especial', key='sim_cheque_especial'), sg.Radio('Não', 'cheque especial', key='nao_cheque_especial')],
+            [sg.Button('Finalizar')]
+        ]
+        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+    
+    def tela_login(self):
+        self.layout = [
+            [sg.Text('Faça o login')],
+            [sg.Text('CPF:')],
+            [sg.Input(key='cpf')],
+            [sg.Text('Senha:')],
+            [sg.Input(key='senha', password_char='*')],
+            [sg.Button('Entrar')]
+        ]
+        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+    
+    def tela_operacoes_conta(self):
+        self.layout = [
+            [sg.Text('Escolha dentre as operações')],
+            [sg.Button('Sacar'), sg.Button('Retirar'), sg.Button('Extrato')]
+        ]
+        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+
 
 class App:
     def __init__(self):
@@ -110,6 +143,25 @@ class App:
             return False
         
         return True
+    
+    def validar_senha(self, senha):
+        sentenca_senha = self.conta.setSenha(senha)
+        
+        if sentenca_senha == False:
+            sg.Popup('Senha inválida!')
+            return False
+
+        return True
+
+    def validar_login(self, cpf, senha):
+        if cpf == '' or senha == '':
+            sg.Popup('ERRO: CPF ou Senha inválida!')
+            return False
+        
+        return True
+    
+        
+
 
     def run(self):
         event, values = self.tela.tela_inicial()
@@ -119,11 +171,17 @@ class App:
             event, values = self.tela.tela_tipo_conta()
             self.tela.window.Close()
 
+            if event == sg.WIN_CLOSED or event == 'Exit':
+                quit()
+
             self.criar_conta(event)
 
             while True:
                 event, values = self.tela.tela_dados_pessoais()
                 self.tela.window.Close()
+
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    quit()
 
                 sentenca = self.validar_dados_pessoais(values['nome'], values['cpf'])
 
@@ -134,51 +192,52 @@ class App:
                 event, values = self.tela.tela_endereco()
                 self.tela.window.Close()
 
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    quit()
+
                 sentenca = self.validar_endereco(values['estado'], values['cidade'], values['bairro'], values['rua'], values['numero'])
 
                 if sentenca == True:
                     break
             
+            while True:
+                event, values = self.tela.tela_senha_chequeEspecial()
+                self.tela.window.Close()
+
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    quit()
+
+                sentenca = self.validar_senha(values['senha'])
+
+                if sentenca == True:
+                    if values['sim_cheque_especial'] == True:
+                        self.conta.setChequeEscpecial(True)
+                        self.conta.setValorCheckEspecial(500)
+                    
+                    #Gravar no Banco
+                    print("Dados foram gravados")
+                    self.run()
+
+                    break
+        elif event == 'Acessar Conta':
+            while True:
+                event, values = self.tela.tela_login()
+                self.tela.window.Close()
+
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    quit()
+
+                sentenca = self.validar_login(values['cpf'], values['senha'])
+
+                if sentenca == True:
+                    break
+
+            event, values = self.tela.tela_operacoes_conta()
+            self.tela.window.Close()
+
             
 
 
 app = App()
 
 app.run()
-# app = AppTela()
-# conta = None
-
-# button, values = app.tela_inicial()
-# app.window.Close()
-
-# if button == 'Criar uma conta':
-#     event, values = app.tela_tipo_conta()
-
-#     if event == 'Corrente':
-#         conta = ContaCorrente()
-#     elif event == 'Poupança':
-#         conta = ContaPoupanca()
-    
-#     app.window.Close()
-
-#     while True:
-#         event, values = app.tela_dados_pessoais()
-#         sentenca_nome = conta.setNome(values['nome'])
-#         sentenca_cpf = conta.setCpf(values['cpf'])
-#         app.window.Close()
-        
-#         if event == None:
-#             break
-
-#         if sentenca_nome == False:
-#             sg.Popup('Nome inválido!')
-#         if sentenca_cpf == False:
-#             sg.Popup('CPF inválido!')
-#         else:
-
-            
-#             event, values = app.tela_endereco()
-
-#             break
-            
-# app.window.Close()
