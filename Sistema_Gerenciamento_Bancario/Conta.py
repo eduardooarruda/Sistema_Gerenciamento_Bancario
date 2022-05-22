@@ -108,17 +108,17 @@ class Conta:
 
     @property
     def getChequeEscpecial(self):
-        return self.__checkEspecial
+        return self.__chequeEspecial
 
     def setChequeEscpecial(self, sentenca):
-        self.__checkEspecial = sentenca
+        self.__chequeEspecial = sentenca
     
     @property
     def getValorChequeEspecial(self):
         return self.__valorChequeEspecial
 
 
-    def setValorCheckEspecial(self, valor):
+    def setValorChequeEspecial(self, valor):
         if valor < 0 or type(valor) != int:
             return False
         

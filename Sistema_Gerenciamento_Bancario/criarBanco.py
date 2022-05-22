@@ -1,7 +1,9 @@
+from pathlib import Path
+from unicodedata import name
 from sqlalchemy import create_engine, Column, Integer, String, Date, Boolean, Float, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
-engine = create_engine('sqlite:///banco.db', echo=True)
+engine = create_engine('sqlite:///banco.db' , echo=True)
 
 Base = declarative_base()
 
