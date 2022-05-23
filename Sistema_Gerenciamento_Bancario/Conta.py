@@ -1,16 +1,17 @@
 from random import randrange
 from Endereco import Endereco
-import datetime
+from datetime import datetime, timezone, timedelta
+# import datetime
 
 class Conta:
     def __init__(self):
-        self.__numero = self.__criarNumero()
         self.__saldo = 0
         self.__agencia = '039'
-        self.__chequeEspecial = False
+        # self.__chequeEspecial = False
         self.__valorChequeEspecial = 0
         self.__endereco = Endereco()
-        self.__data_criacao = datetime.date.today()
+        self.__data_criacao =  self.__setDataCriacao()
+        self.__numero = None
         self.__nome = None
         self.__cpf = None
         self.__senha = None
@@ -19,11 +20,11 @@ class Conta:
     def getNumero(self):
         return self.__numero
     
-    def __criarNumero(self):
-        id = 5859
+    def setNumero(self, idBanco):
+        idBanco = idBanco+1
         dv = randrange(1,10)
-        numero = '0' * (8 - len(str(id))) + str(id) + '-' + str(dv)
-        return numero
+        numero = '0' * (8 - len(str(idBanco))) + str(idBanco) + '-' + str(dv)
+        self.__numero = numero
 
     @property    
     def getSaldo(self):
@@ -106,12 +107,12 @@ class Conta:
         self.__senha = senha
         return True
 
-    @property
-    def getChequeEscpecial(self):
-        return self.__chequeEspecial
+    # @property
+    # def getChequeEscpecial(self):
+    #     return self.__chequeEspecial
 
-    def setChequeEscpecial(self, sentenca):
-        self.__chequeEspecial = sentenca
+    # def setChequeEscpecial(self, sentenca):
+    #     self.__chequeEspecial = sentenca
     
     @property
     def getValorChequeEspecial(self):
@@ -128,6 +129,14 @@ class Conta:
     @property
     def getDataCriacao(self):
         return self.__data_criacao
-    
-                
-                
+
+    def __setDataCriacao(self):
+        data_atual = datetime.now()
+        diferenca = timedelta(hours=-3)
+        fuso_horario = timezone(diferenca)
+        data = data_atual.astimezone(fuso_horario)
+        data = data.strftime('%d/%m/%Y %H:%M:%S')
+        data_atual = datetime.strptime(data,'%d/%m/%Y %H:%M:%S' )
+        return data_atual
+        
+           

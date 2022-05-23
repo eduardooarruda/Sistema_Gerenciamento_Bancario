@@ -1,7 +1,8 @@
 from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
-from criarBanco import session, Conta as ContaDB, Extrato as ExtratoDB
+from criarBanco import session, ContaCorrente as ContaCorrenteDB, ExtratoContaCorrente as ExtratoContaCorrenteDB, ContaPoupanca as ContaPoupancaDB, ExtratoContaPoupanca as ExtratoContaPoupancaDB
+
 # from sqlalchemy.orm import sessionmaker
 import PySimpleGUI as sg
 sg.theme('DarkAmber')
@@ -97,9 +98,21 @@ class App:
     def criar_conta(self, tipo):
         if tipo == 'Corrente':
             self.conta = ContaCorrente()
+            try:
+                ultimo_registro_conta_corrente = session.query(ContaCorrenteDB).order_by(ContaCorrenteDB.id.desc()).first()
+                # print('CONSULTA',ultimo_registro_conta_corrente.id, type(ultimo_registro_conta_corrente.id))
+                self.conta.setNumero(ultimo_registro_conta_corrente.id)
+            except:
+                self.conta.setNumero(0)
+
         elif tipo == 'Poupança':
             self.conta = ContaPoupanca()
-        # print(self.conta)
+            try:
+                ultimo_registro_conta_poupanca = session.query(ContaPoupancaDB).order_by(ContaPoupancaDB.id.desc()).first()
+                self.conta.setNumero(ultimo_registro_conta_poupanca.id)
+            except:
+                self.conta.setNumero(0)
+
 
     def validar_dados_pessoais(self, nome, cpf):
         sentenca_nome = self.conta.setNome(nome)
@@ -212,47 +225,62 @@ class App:
 
                 if sentenca == True:
                     if values['sim_cheque_especial'] == True:
-                        self.conta.setChequeEscpecial(True)
                         self.conta.setValorChequeEspecial(500)
+                    
                     
                     #Gravar no Banco
                     
-                    gravarConta = ContaDB(
-                        numeroConta = self.conta.getNumero,
-                        saldo = self.conta.getSaldo,
-                        agencia = self.conta.getAgencia,
-                        chequeEspecial = self.conta.getChequeEscpecial,
-                        valorChequeEspecial = self.conta.getValorChequeEspecial, 
-                        nome = self.conta.getNome,
-                        cpf = self.conta.getCpf,
-                        senha = self.conta.getSenha,
-                        estado = self.conta.getEndereco.getEstado,
-                        cidade = self.conta.getEndereco.getCidade,
-                        bairro = self.conta.getEndereco.getBairro,
-                        rua = self.conta.getEndereco.getRua,
-                        numeroEndereco = self.conta.getEndereco.getNumero,
-                        data_criacao = self.conta.getDataCriacao,
-                        data_atualizacao_rendimento_poupanca = self.conta.getDataCriacao
-                    )
+                    if isinstance(self.conta, ContaCorrente):
+                        gravarConta = ContaCorrenteDB(
+                            numeroConta = self.conta.getNumero,
+                            saldo = self.conta.getSaldo,
+                            agencia = self.conta.getAgencia,
+                            valorChequeEspecial = self.conta.getValorChequeEspecial, 
+                            nome = self.conta.getNome,
+                            cpf = self.conta.getCpf,
+                            senha = self.conta.getSenha,
+                            estado = self.conta.getEndereco.getEstado,
+                            cidade = self.conta.getEndereco.getCidade,
+                            bairro = self.conta.getEndereco.getBairro,
+                            rua = self.conta.getEndereco.getRua,
+                            numeroEndereco = self.conta.getEndereco.getNumero,
+                            data_criacao = self.conta.getDataCriacao,
+                        )
+
+                    elif isinstance(self.conta, ContaPoupanca):
+                        gravarConta = ContaPoupancaDB(
+                            numeroConta = self.conta.getNumero,
+                            saldo = self.conta.getSaldo,
+                            agencia = self.conta.getAgencia,
+                            valorChequeEspecial = self.conta.getValorChequeEspecial, 
+                            nome = self.conta.getNome,
+                            cpf = self.conta.getCpf,
+                            senha = self.conta.getSenha,
+                            estado = self.conta.getEndereco.getEstado,
+                            cidade = self.conta.getEndereco.getCidade,
+                            bairro = self.conta.getEndereco.getBairro,
+                            rua = self.conta.getEndereco.getRua,
+                            numeroEndereco = self.conta.getEndereco.getNumero,
+                            data_criacao = self.conta.getDataCriacao,
+                            data_atualizacao_rendimento_poupanca = self.conta.getDataCriacao
+                        )
 
                     
 
-                    print(f'self.conta.getNumero: {self.conta.getNumero}')
-                    print(f'self.conta.getSaldo : {self.conta.getSaldo}')
-                    print(f'self.conta.getAgencia : {self.conta.getAgencia}')
-                    print(f'self.conta.getChequeEscpecial : {self.conta.getChequeEscpecial}')
-                    print(f'self.conta.getValorChequeEspecial : {self.conta.getValorChequeEspecial}')
-                    print(f'self.conta.getNome : {self.conta.getNome}')
-                    print(f'self.conta.getCpf : {self.conta.getCpf}')
-                    print(f'self.conta.getSenha : {self.conta.getSenha}')
-                    print(f'self.conta.getEndereco.getEstado : {self.conta.getEndereco.getEstado}')
-                    print(f'self.conta.getEndereco.getCidade : {self.conta.getEndereco.getCidade}')
-                    print(f'self.conta.getEndereco.getBairro : {self.conta.getEndereco.getBairro}')
-                    print(f'self.conta.getEndereco.getRua : {self.conta.getEndereco.getRua}')
-                    print(f'self.conta.getEndereco.getNumero: {self.conta.getEndereco.getNumero}')
-                    print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
-                    print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
-
+                    # print(f'self.conta.getNumero: {self.conta.getNumero}')
+                    # print(f'self.conta.getSaldo : {self.conta.getSaldo}')
+                    # print(f'self.conta.getAgencia : {self.conta.getAgencia}')
+                    # print(f'self.conta.getValorChequeEspecial : {self.conta.getValorChequeEspecial}')
+                    # print(f'self.conta.getNome : {self.conta.getNome}')
+                    # print(f'self.conta.getCpf : {self.conta.getCpf}')
+                    # print(f'self.conta.getSenha : {self.conta.getSenha}')
+                    # print(f'self.conta.getEndereco.getEstado : {self.conta.getEndereco.getEstado}')
+                    # print(f'self.conta.getEndereco.getCidade : {self.conta.getEndereco.getCidade}')
+                    # print(f'self.conta.getEndereco.getBairro : {self.conta.getEndereco.getBairro}')
+                    # print(f'self.conta.getEndereco.getRua : {self.conta.getEndereco.getRua}')
+                    # print(f'self.conta.getEndereco.getNumero: {self.conta.getEndereco.getNumero}')
+                    # print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
+                    
                     session.add(gravarConta)
                     session.commit()
 
