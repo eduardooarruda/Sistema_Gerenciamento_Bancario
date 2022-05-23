@@ -1,3 +1,4 @@
+from sqlalchemy import true
 from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
@@ -84,7 +85,16 @@ class AppTela:
     def tela_operacoes_conta(self):
         self.layout = [
             [sg.Text('Escolha dentre as operações')],
-            [sg.Button('Sacar'), sg.Button('Retirar'), sg.Button('Extrato')]
+            [sg.Button('Sacar'), sg.Button('Depositar'), sg.Button('Extrato')]
+        ]
+        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+
+    def tela_sacar(self):
+        self.layout = [
+            [sg.Text('Digite o valor a ser sacado:*')],
+            [sg.Input(key='saque')],
+            [sg.Button('Sacar')]
         ]
         self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
@@ -94,7 +104,8 @@ class App:
     def __init__(self):
         self.tela = AppTela()
         self.conta = None
-    
+        self.usuarioLogado = None
+
     def criar_conta(self, tipo):
         if tipo == 'Corrente':
             self.conta = ContaCorrente()
@@ -117,6 +128,10 @@ class App:
     def validar_dados_pessoais(self, nome, cpf):
         sentenca_nome = self.conta.setNome(nome)
         sentenca_cpf = self.conta.setCpf(cpf)
+
+        if session.query(ContaCorrenteDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaCorrente) or  session.query(ContaPoupancaDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaPoupanca):
+            sg.Popup('Este CPF já foi cadastrado')
+            return False
 
         if sentenca_nome == False:
             sg.Popup('Nome inválido!')
@@ -172,8 +187,50 @@ class App:
             sg.Popup('ERRO: CPF ou Senha inválida!')
             return False
         
+        if isinstance(self.conta, ContaCorrente):
+            usuario = session.query(ContaCorrenteDB).filter_by(cpf=cpf).first()
+        elif isinstance(self.conta, ContaPoupanca):
+            usuario = session.query(ContaPoupancaDB).filter_by(cpf=cpf).first()
+        
+        if not usuario:
+            sg.Popup('ERRO: CPF inválido!')
+            return False
+        
+        if usuario.senha != senha:
+            sg.Popup('ERRO: Senha inválida!')
+            return False
+
+        self.usuarioLogado = usuario
+        print('SALDO DO USUARIO LOGADO', self.usuarioLogado.saldo)
         return True
     
+    def validar_saque(self,  valor):
+        # sentenca_senha = self.conta.setSenha(senha)
+        valor = float(valor)
+
+        if valor < 0:
+            sg.Popup('Valor inválido!')
+            return False
+        
+        NovoSaldo = self.usuarioLogado.saldo - valor
+        chequeEspecial = self.usuarioLogado.valorChequeEspecial
+
+        if NovoSaldo < 0:
+            diferenca = chequeEspecial - abs(NovoSaldo)
+            if chequeEspecial != 0.0 and (diferenca >= 0):
+                self.usuarioLogado.valorChequeEspecial = diferenca 
+                self.usuarioLogado.saldo = 0.0
+                session.commit()
+                return True
+            else:
+                sg.Popup('Você não possui saldo suficiente para fazer esta operação')
+                return False
+    
+            
+        self.usuarioLogado.saldo -= valor
+        session.commit()
+
+        return True
         
 
 
@@ -293,6 +350,14 @@ class App:
 
                     break
         elif event == 'Acessar Conta':
+            event, values = self.tela.tela_tipo_conta()
+            self.tela.window.Close()
+
+            if event == sg.WIN_CLOSED or event == 'Exit':
+                quit()
+
+            self.criar_conta(event)
+
             while True:
                 event, values = self.tela.tela_login()
                 self.tela.window.Close()
@@ -307,6 +372,23 @@ class App:
 
             event, values = self.tela.tela_operacoes_conta()
             self.tela.window.Close()
+
+            if event == 'Sacar':
+                while True:
+                    event, values = self.tela.tela_sacar()
+                    self.tela.window.Close()
+
+                    if event == sg.WIN_CLOSED or event == 'Exit':
+                        quit()
+                    
+                    sentenca = self.validar_saque(values['saque'])
+
+                    if sentenca == True:
+                        break
+
+
+
+
 
             
 

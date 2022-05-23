@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 class Conta:
     def __init__(self):
-        self.__saldo = 0
+        self.__saldo = 1000
         self.__agencia = '039'
         # self.__chequeEspecial = False
         self.__valorChequeEspecial = 0
@@ -37,21 +37,21 @@ class Conta:
         self.__saldo += valor
         return  True
     
-    def retirarValor(self, valor):
-        if valor < 0:
-            return False
+    # def retirarValor(self, valor):
+    #     if valor < 0:
+    #         return False
         
-        NovoSaldo = self.getSaldo - valor
+    #     NovoSaldo = self.getSaldo - valor
 
-        if NovoSaldo < 0:
-            if self.getChequeEscpecial == True and (self.getValorChequeEspecial - abs(NovoSaldo) > 0):
-                self.setValorCheckEspecial(abs(NovoSaldo))
-                self._saldo = 0
-                return True
-            else:
-                return False
-        else:
-            self._saldo -= valor
+    #     if NovoSaldo < 0:
+    #         if self.getChequeEscpecial == True and (self.getValorChequeEspecial - abs(NovoSaldo) > 0):
+    #             self.setValorCheckEspecial(abs(NovoSaldo))
+    #             self._saldo = 0
+    #             return True
+    #         else:
+    #             return False
+    #     else:
+    #         self._saldo -= valor
 
     @property  
     def getAgencia(self):
