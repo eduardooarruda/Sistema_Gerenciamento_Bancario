@@ -5,7 +5,7 @@ class Endereco:
         self.__bairro = None
         self.__rua = None
         self.__numero = None
-     
+
     @property
     def getEstado(self):
         return self.__estado
@@ -15,18 +15,18 @@ class Endereco:
             return False
         self.__estado = estado
         return True
-    
+
     @property
     def getCidade(self):
         return self.__cidade
-    
+
     def setCidade(self, cidade):
         if cidade == '':
             return False
         self.__cidade = cidade
         return True
-    
-    @property       
+
+    @property
     def getBairro(self):
         return self.__bairro
 
@@ -35,8 +35,8 @@ class Endereco:
             return False
         self.__bairro = bairro
         return True
-    
-    @property 
+
+    @property
     def getRua(self):
         return self.__rua
 
@@ -45,7 +45,7 @@ class Endereco:
             return False
         self.__rua = rua
         return True
-     
+
     @property
     def getNumero(self):
         return self.__numero

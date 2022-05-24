@@ -3,10 +3,10 @@ from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
 from criarBanco import session, ContaCorrente as ContaCorrenteDB, ExtratoContaCorrente as ExtratoContaCorrenteDB, ContaPoupanca as ContaPoupancaDB, ExtratoContaPoupanca as ExtratoContaPoupancaDB
-
-# from sqlalchemy.orm import sessionmaker
+from datetime import datetime, timezone, timedelta
 import PySimpleGUI as sg
 sg.theme('DarkAmber')
+
 
 class AppTela:
     def __init__(self):
@@ -18,15 +18,17 @@ class AppTela:
             [sg.Text('Escolhar uma opção:')],
             [sg.Button('Criar uma conta'), sg.Button('Acessar Conta')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
-    
+
     def tela_tipo_conta(self):
         self.layout = [
             [sg.Text('Escolhar o tipo da conta:')],
             [sg.Button('Corrente'), sg.Button('Poupança')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
 
     def tela_dados_pessoais(self):
@@ -38,9 +40,10 @@ class AppTela:
             [sg.Input(key='cpf')],
             [sg.Button('Próximo')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
-    
+
     def tela_endereco(self):
         self.layout = [
             [sg.Text('Estado:*')],
@@ -55,21 +58,24 @@ class AppTela:
             [sg.Input(key='numero')],
             [sg.Button('Próximo')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
-    
+
     def tela_senha_chequeEspecial(self):
         self.layout = [
             [sg.Text('Senha:*')],
             [sg.Text('OBS: A senha deve conter pelo menos 8 caracteres')],
             [sg.Input(key='senha', password_char='*')],
             [sg.Text('Cheque Especial:*')],
-            [sg.Radio('Sim', 'cheque especial', key='sim_cheque_especial'), sg.Radio('Não', 'cheque especial', key='nao_cheque_especial')],
+            [sg.Radio('Sim', 'cheque especial', key='sim_cheque_especial'), sg.Radio(
+                'Não', 'cheque especial', key='nao_cheque_especial')],
             [sg.Button('Finalizar')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
-    
+
     def tela_login(self):
         self.layout = [
             [sg.Text('Faça o login')],
@@ -79,15 +85,18 @@ class AppTela:
             [sg.Input(key='senha', password_char='*')],
             [sg.Button('Entrar')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
-    
+
     def tela_operacoes_conta(self):
         self.layout = [
             [sg.Text('Escolha dentre as operações')],
-            [sg.Button('Sacar'), sg.Button('Depositar'), sg.Button('Extrato')]
+            [sg.Button('Sacar'), sg.Button('Depositar'),
+             sg.Button('Extrato'), sg.Button('Voltar')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
 
     def tela_sacar(self):
@@ -96,7 +105,55 @@ class AppTela:
             [sg.Input(key='saque')],
             [sg.Button('Sacar')]
         ]
-        self.window = sg.Window('Sistema de Gerenciamento Bancário', self.layout)
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+
+    def tela_depositar(self):
+        self.layout = [
+            [sg.Text('Digite o valor a ser depositado:*')],
+            [sg.Input(key='deposito')],
+            [sg.Button('Depositar')]
+        ]
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+
+    def tela_extrato(self, conta, usuario):
+        tipo_conta = None
+        extrato = None
+
+        if isinstance(conta, ContaCorrente):
+            print("CONTA COORENTE")
+            tipo_conta = 'Corrente'
+            extrato = session.query(ExtratoContaCorrenteDB).filter_by(
+                idConta=usuario.id).all()
+        elif isinstance(conta, ContaPoupanca):
+            print("CONTA POUNCAPPA")
+            tipo_conta = 'Poupança'
+            extrato = session.query(ExtratoContaPoupancaDB).filter_by(
+                idConta=usuario.id).all()
+
+        self.layout = [
+            [sg.Text('Extrato')],
+            [sg.Text(f'Agência: {usuario.agencia}')],
+            [sg.Text(f'Número da conta: {usuario.numeroConta}')],
+            [sg.Text(f'Nome: {usuario.nome}')],
+            [sg.Text(f'tipo da conta: {tipo_conta}')],
+            [sg.Text(f'Número da conta: {usuario.numeroConta}')],
+        ]
+
+        if extrato:
+            self.layout.append([sg.Text('Data'), sg.Text('Tipo de operação'), sg.Text(
+                'Saldo anterior'), sg.Text('Saldo Novo')])
+
+        for operacao in extrato:
+            self.layout.append([sg.Text(f'{operacao.data}'), sg.Text(f'{operacao.tipo_operacao}'), sg.Text(
+                f'{operacao.saldo_anterior}'), sg.Text(f'{operacao.saldo_novo}')])
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
+
+        self.layout.append([sg.Button('OK')])
         return self.window.Read()
 
 
@@ -105,13 +162,14 @@ class App:
         self.tela = AppTela()
         self.conta = None
         self.usuarioLogado = None
+        self.extrato = None
 
     def criar_conta(self, tipo):
         if tipo == 'Corrente':
             self.conta = ContaCorrente()
             try:
-                ultimo_registro_conta_corrente = session.query(ContaCorrenteDB).order_by(ContaCorrenteDB.id.desc()).first()
-                # print('CONSULTA',ultimo_registro_conta_corrente.id, type(ultimo_registro_conta_corrente.id))
+                ultimo_registro_conta_corrente = session.query(
+                    ContaCorrenteDB).order_by(ContaCorrenteDB.id.desc()).first()
                 self.conta.setNumero(ultimo_registro_conta_corrente.id)
             except:
                 self.conta.setNumero(0)
@@ -119,17 +177,17 @@ class App:
         elif tipo == 'Poupança':
             self.conta = ContaPoupanca()
             try:
-                ultimo_registro_conta_poupanca = session.query(ContaPoupancaDB).order_by(ContaPoupancaDB.id.desc()).first()
+                ultimo_registro_conta_poupanca = session.query(
+                    ContaPoupancaDB).order_by(ContaPoupancaDB.id.desc()).first()
                 self.conta.setNumero(ultimo_registro_conta_poupanca.id)
             except:
                 self.conta.setNumero(0)
-
 
     def validar_dados_pessoais(self, nome, cpf):
         sentenca_nome = self.conta.setNome(nome)
         sentenca_cpf = self.conta.setCpf(cpf)
 
-        if session.query(ContaCorrenteDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaCorrente) or  session.query(ContaPoupancaDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaPoupanca):
+        if session.query(ContaCorrenteDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaCorrente) or session.query(ContaPoupancaDB).filter_by(cpf=cpf).first() and isinstance(self.conta, ContaPoupanca):
             sg.Popup('Este CPF já foi cadastrado')
             return False
 
@@ -140,7 +198,7 @@ class App:
         if sentenca_cpf == False:
             sg.Popup('CPF inválido!')
             return False
-    
+
         return True
 
     def validar_endereco(self, estado, bairro, cidade, rua, numero):
@@ -149,7 +207,6 @@ class App:
         sentenca_cidade = self.conta.getEndereco.setCidade(cidade)
         sentenca_rua = self.conta.getEndereco.setRua(rua)
         sentenca_numero = self.conta.getEndereco.setNumero(numero)
-       
 
         if sentenca_estado == False:
             sg.Popup('Estado inválido!')
@@ -158,11 +215,11 @@ class App:
         if sentenca_cidade == False:
             sg.Popup('Cidade inválida!')
             return False
-        
+
         if sentenca_bairro == False:
             sg.Popup('bairro inválido!')
             return False
-        
+
         if sentenca_rua == False:
             sg.Popup('Rua inválida!')
             return False
@@ -170,12 +227,12 @@ class App:
         if sentenca_numero == False:
             sg.Popup('Numéro inválido!')
             return False
-        
+
         return True
-    
+
     def validar_senha(self, senha):
         sentenca_senha = self.conta.setSenha(senha)
-        
+
         if sentenca_senha == False:
             sg.Popup('Senha inválida!')
             return False
@@ -186,58 +243,115 @@ class App:
         if cpf == '' or senha == '':
             sg.Popup('ERRO: CPF ou Senha inválida!')
             return False
-        
+
         if isinstance(self.conta, ContaCorrente):
             usuario = session.query(ContaCorrenteDB).filter_by(cpf=cpf).first()
+            self.extrato = ExtratoContaCorrenteDB()
         elif isinstance(self.conta, ContaPoupanca):
             usuario = session.query(ContaPoupancaDB).filter_by(cpf=cpf).first()
-        
+            self.extrato = ExtratoContaPoupancaDB()
         if not usuario:
             sg.Popup('ERRO: CPF inválido!')
             return False
-        
+
         if usuario.senha != senha:
             sg.Popup('ERRO: Senha inválida!')
             return False
 
         self.usuarioLogado = usuario
-        print('SALDO DO USUARIO LOGADO', self.usuarioLogado.saldo)
+        # print('SALDO DO USUARIO LOGADO', self.usuarioLogado.saldo)
         return True
-    
+
     def validar_saque(self,  valor):
-        # sentenca_senha = self.conta.setSenha(senha)
-        valor = float(valor)
+
+        try:
+            valor = float(valor)
+        except ValueError:
+            sg.Popup('Valor inválido!')
+            return False
 
         if valor < 0:
             sg.Popup('Valor inválido!')
             return False
-        
+
+        data_atual = datetime.now()
+        diferenca = timedelta(hours=-3)
+        fuso_horario = timezone(diferenca)
+        data = data_atual.astimezone(fuso_horario)
+        data = data.strftime('%d/%m/%Y %H:%M:%S')
+        data_atual = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+
         NovoSaldo = self.usuarioLogado.saldo - valor
         chequeEspecial = self.usuarioLogado.valorChequeEspecial
+
+        self.extrato.data = data_atual
+        self.extrato.idConta = self.usuarioLogado.id
+        self.extrato.tipo_operacao = 'Saque'
+        self.extrato.saldo_anterior = self.usuarioLogado.saldo
 
         if NovoSaldo < 0:
             diferenca = chequeEspecial - abs(NovoSaldo)
             if chequeEspecial != 0.0 and (diferenca >= 0):
-                self.usuarioLogado.valorChequeEspecial = diferenca 
+
+                self.usuarioLogado.valorChequeEspecial = diferenca
                 self.usuarioLogado.saldo = 0.0
+                session.commit()
+
+                self.extrato.saldo_novo = self.usuarioLogado.saldo
+                session.add(self.extrato)
                 session.commit()
                 return True
             else:
-                sg.Popup('Você não possui saldo suficiente para fazer esta operação')
+                sg.Popup(
+                    'Você não possui saldo suficiente para fazer esta operação')
                 return False
-    
-            
+
         self.usuarioLogado.saldo -= valor
         session.commit()
 
+        self.extrato.saldo_novo = self.usuarioLogado.saldo
+        session.add(self.extrato)
+        session.commit()
         return True
-        
 
+    def validar_deposito(self, valor):
+        try:
+            valor = float(valor)
+        except ValueError:
+            sg.Popup('Valor inválido!')
+            return False
+
+        if valor < 0:
+            sg.Popup('Valor inválido!')
+            return False
+
+        data_atual = datetime.now()
+        diferenca = timedelta(hours=-3)
+        fuso_horario = timezone(diferenca)
+        data = data_atual.astimezone(fuso_horario)
+        data = data.strftime('%d/%m/%Y %H:%M:%S')
+        data_atual = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+
+        self.usuarioLogado.saldo += valor
+        session.commit()
+
+        self.extrato.data = data_atual
+        self.extrato.idConta = self.usuarioLogado.id
+        self.extrato.tipo_operacao = 'Deposito'
+        self.extrato.saldo_anterior = self.usuarioLogado.saldo - valor
+        self.extrato.saldo_novo = self.usuarioLogado.saldo
+        session.add(self.extrato)
+        session.commit()
+
+        return True
 
     def run(self):
         event, values = self.tela.tela_inicial()
         self.tela.window.Close()
-        
+
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            quit()
+
         if event == 'Criar uma conta':
             event, values = self.tela.tela_tipo_conta()
             self.tela.window.Close()
@@ -254,11 +368,12 @@ class App:
                 if event == sg.WIN_CLOSED or event == 'Exit':
                     quit()
 
-                sentenca = self.validar_dados_pessoais(values['nome'], values['cpf'])
+                sentenca = self.validar_dados_pessoais(
+                    values['nome'], values['cpf'])
 
                 if sentenca == True:
                     break
-            
+
             while True:
                 event, values = self.tela.tela_endereco()
                 self.tela.window.Close()
@@ -266,11 +381,12 @@ class App:
                 if event == sg.WIN_CLOSED or event == 'Exit':
                     quit()
 
-                sentenca = self.validar_endereco(values['estado'], values['cidade'], values['bairro'], values['rua'], values['numero'])
+                sentenca = self.validar_endereco(
+                    values['estado'], values['cidade'], values['bairro'], values['rua'], values['numero'])
 
                 if sentenca == True:
                     break
-            
+
             while True:
                 event, values = self.tela.tela_senha_chequeEspecial()
                 self.tela.window.Close()
@@ -283,72 +399,51 @@ class App:
                 if sentenca == True:
                     if values['sim_cheque_especial'] == True:
                         self.conta.setValorChequeEspecial(500)
-                    
-                    
-                    #Gravar no Banco
-                    
+
+                    # Gravar no Banco
+
                     if isinstance(self.conta, ContaCorrente):
                         gravarConta = ContaCorrenteDB(
-                            numeroConta = self.conta.getNumero,
-                            saldo = self.conta.getSaldo,
-                            agencia = self.conta.getAgencia,
-                            valorChequeEspecial = self.conta.getValorChequeEspecial, 
-                            nome = self.conta.getNome,
-                            cpf = self.conta.getCpf,
-                            senha = self.conta.getSenha,
-                            estado = self.conta.getEndereco.getEstado,
-                            cidade = self.conta.getEndereco.getCidade,
-                            bairro = self.conta.getEndereco.getBairro,
-                            rua = self.conta.getEndereco.getRua,
-                            numeroEndereco = self.conta.getEndereco.getNumero,
-                            data_criacao = self.conta.getDataCriacao,
+                            numeroConta=self.conta.getNumero,
+                            saldo=self.conta.getSaldo,
+                            agencia=self.conta.getAgencia,
+                            valorChequeEspecial=self.conta.getValorChequeEspecial,
+                            nome=self.conta.getNome,
+                            cpf=self.conta.getCpf,
+                            senha=self.conta.getSenha,
+                            estado=self.conta.getEndereco.getEstado,
+                            cidade=self.conta.getEndereco.getCidade,
+                            bairro=self.conta.getEndereco.getBairro,
+                            rua=self.conta.getEndereco.getRua,
+                            numeroEndereco=self.conta.getEndereco.getNumero,
+                            data_criacao=self.conta.getDataCriacao,
                         )
 
                     elif isinstance(self.conta, ContaPoupanca):
                         gravarConta = ContaPoupancaDB(
-                            numeroConta = self.conta.getNumero,
-                            saldo = self.conta.getSaldo,
-                            agencia = self.conta.getAgencia,
-                            valorChequeEspecial = self.conta.getValorChequeEspecial, 
-                            nome = self.conta.getNome,
-                            cpf = self.conta.getCpf,
-                            senha = self.conta.getSenha,
-                            estado = self.conta.getEndereco.getEstado,
-                            cidade = self.conta.getEndereco.getCidade,
-                            bairro = self.conta.getEndereco.getBairro,
-                            rua = self.conta.getEndereco.getRua,
-                            numeroEndereco = self.conta.getEndereco.getNumero,
-                            data_criacao = self.conta.getDataCriacao,
-                            data_atualizacao_rendimento_poupanca = self.conta.getDataCriacao
+                            numeroConta=self.conta.getNumero,
+                            saldo=self.conta.getSaldo,
+                            agencia=self.conta.getAgencia,
+                            valorChequeEspecial=self.conta.getValorChequeEspecial,
+                            nome=self.conta.getNome,
+                            cpf=self.conta.getCpf,
+                            senha=self.conta.getSenha,
+                            estado=self.conta.getEndereco.getEstado,
+                            cidade=self.conta.getEndereco.getCidade,
+                            bairro=self.conta.getEndereco.getBairro,
+                            rua=self.conta.getEndereco.getRua,
+                            numeroEndereco=self.conta.getEndereco.getNumero,
+                            data_criacao=self.conta.getDataCriacao,
+                            data_atualizacao_rendimento_poupanca=self.conta.getDataCriacao
                         )
 
-                    
-
-                    # print(f'self.conta.getNumero: {self.conta.getNumero}')
-                    # print(f'self.conta.getSaldo : {self.conta.getSaldo}')
-                    # print(f'self.conta.getAgencia : {self.conta.getAgencia}')
-                    # print(f'self.conta.getValorChequeEspecial : {self.conta.getValorChequeEspecial}')
-                    # print(f'self.conta.getNome : {self.conta.getNome}')
-                    # print(f'self.conta.getCpf : {self.conta.getCpf}')
-                    # print(f'self.conta.getSenha : {self.conta.getSenha}')
-                    # print(f'self.conta.getEndereco.getEstado : {self.conta.getEndereco.getEstado}')
-                    # print(f'self.conta.getEndereco.getCidade : {self.conta.getEndereco.getCidade}')
-                    # print(f'self.conta.getEndereco.getBairro : {self.conta.getEndereco.getBairro}')
-                    # print(f'self.conta.getEndereco.getRua : {self.conta.getEndereco.getRua}')
-                    # print(f'self.conta.getEndereco.getNumero: {self.conta.getEndereco.getNumero}')
-                    # print(f'self.conta.getDataCriacao : {self.conta.getDataCriacao}')
-                    
                     session.add(gravarConta)
                     session.commit()
 
-                    #     sg.Popup('Dados foram gravados')
-                    # except:
-                    #     sg.Popup('Error')
-
-                   
                     self.run()
 
                     break
+
         elif event == 'Acessar Conta':
             event, values = self.tela.tela_tipo_conta()
             self.tela.window.Close()
@@ -370,29 +465,48 @@ class App:
                 if sentenca == True:
                     break
 
-            event, values = self.tela.tela_operacoes_conta()
-            self.tela.window.Close()
+            while True:
+                event, values = self.tela.tela_operacoes_conta()
+                self.tela.window.Close()
+                if event == sg.WIN_CLOSED or event == 'Exit':
+                    quit()
 
-            if event == 'Sacar':
-                while True:
-                    event, values = self.tela.tela_sacar()
+                if event == 'Voltar':
+                    self.run()
+
+                if event == 'Sacar':
+                    while True:
+                        event, values = self.tela.tela_sacar()
+                        self.tela.window.Close()
+
+                        if event == sg.WIN_CLOSED or event == 'Exit':
+                            break
+
+                        sentenca = self.validar_saque(values['saque'])
+
+                        if sentenca == True:
+                            break
+
+                elif event == 'Depositar':
+                    while True:
+                        event, values = self.tela.tela_depositar()
+                        self.tela.window.Close()
+
+                        if event == sg.WIN_CLOSED or event == 'Exit':
+                            break
+
+                        sentenca = self.validar_deposito(values['deposito'])
+
+                        if sentenca == True:
+                            break
+
+                elif event == 'Extrato':
+                    event, values = self.tela.tela_extrato(
+                        self.conta, self.usuarioLogado)
                     self.tela.window.Close()
 
-                    if event == sg.WIN_CLOSED or event == 'Exit':
-                        quit()
-                    
-                    sentenca = self.validar_saque(values['saque'])
 
-                    if sentenca == True:
-                        break
+if __name__ == '__main__':
+    app = App()
 
-
-
-
-
-            
-
-
-app = App()
-
-app.run()
+    app.run()
