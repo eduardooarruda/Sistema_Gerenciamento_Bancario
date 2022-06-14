@@ -1,15 +1,16 @@
 from random import randrange
 from Endereco import Endereco
+from Emprestimo import Emprestimo
 from datetime import datetime, timezone, timedelta
+from abc import ABC, abstractmethod
 
-
-class Conta:
+class Conta(ABC):
     def __init__(self):
         self.__saldo = 10
-        self.__agencia = '039'
         self.__valorChequeEspecial = 0
         self.__endereco = Endereco()
         self.__data_criacao = self.__setDataCriacao()
+        self._agencia = None
         self.__numero = None
         self.__nome = None
         self.__cpf = None
@@ -31,7 +32,11 @@ class Conta:
 
     @property
     def getAgencia(self):
-        return self.__agencia
+        return self._agencia
+    
+    @abstractmethod
+    def agencia(self, agencia):
+        pass
 
     @property
     def getNome(self):
@@ -87,7 +92,7 @@ class Conta:
         return self.__valorChequeEspecial
 
     def setValorChequeEspecial(self, valor):
-        if valor < 0 or type(valor) != int:
+        if valor < 0 or type(valor) != float:
             return False
 
         self.__valorChequeEspecial = valor
@@ -105,3 +110,4 @@ class Conta:
         data = data.strftime('%d/%m/%Y %H:%M:%S')
         data_atual = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
         return data_atual
+

@@ -214,6 +214,16 @@ class AppTela:
         self.window = sg.Window(
             'Sistema de Gerenciamento Bancário', self.layout, element_justification='c')
         return self.window.Read()
+    
+    def tela_cadastrar_funcionario(self):
+        self.layout = [
+            [sg.Button('Secretários', size=(25,))],
+            [sg.Button('Caixa de banco', size=(25,))],
+            [sg.Button('Gerente de Agência', size=(25,))]
+        ]
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout, element_justification='c')
+        return self.window.Read()
 
 
 class App:
@@ -225,6 +235,7 @@ class App:
     def criar_conta(self, tipo):
         if tipo == 'Corrente':
             self.conta = ContaCorrente()
+            self.conta.agencia()
             try:
                 ultimo_registro_conta_corrente = session.query(
                     ContaCorrenteDB).order_by(ContaCorrenteDB.id.desc()).first()
@@ -234,6 +245,7 @@ class App:
 
         elif tipo == 'Poupança':
             self.conta = ContaPoupanca()
+            self.conta.agencia()
             try:
                 ultimo_registro_conta_poupanca = session.query(
                     ContaPoupancaDB).order_by(ContaPoupancaDB.id.desc()).first()
@@ -628,10 +640,17 @@ class App:
 
                 if event == 'Emprestimo':
                     pass
+
                 elif event == 'Visualizar contas':
                     pass
+
                 elif event == 'Cadastrar funcionários':
-                    pass
+                    event, values = self.tela.tela_cadastrar_funcionario()
+                    self.tela.window.Close()
+
+                    if event == sg.WIN_CLOSED or event == 'Exit':
+                        quit()
+
                 elif event == 'Visualizar funcionários':
                     pass
 

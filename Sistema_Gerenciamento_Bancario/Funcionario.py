@@ -60,7 +60,7 @@ class Funcionario(ABC):
 
     @property
     def getBeneficios(self):
-        return self._beneficios
+        return self.__beneficios
             
 
     @property

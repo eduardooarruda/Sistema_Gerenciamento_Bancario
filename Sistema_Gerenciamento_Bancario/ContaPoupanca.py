@@ -17,3 +17,6 @@ class ContaPoupanca(Conta):
         dataAtual = datetime.date.today()
         diferencaEmDias = (dataAtual - dataCriacao).days
         return self.getSaldo + self.getTaxa() * diferencaEmDias * self.getSaldo
+
+    def agencia(self, agencia = '039'):
+        self._agencia = agencia
