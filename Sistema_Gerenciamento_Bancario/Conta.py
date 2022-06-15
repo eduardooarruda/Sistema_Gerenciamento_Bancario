@@ -92,7 +92,9 @@ class Conta(ABC):
         return self.__valorChequeEspecial
 
     def setValorChequeEspecial(self, valor):
-        if valor < 0 or type(valor) != float:
+        try: 
+            valor = float(valor)
+        except:
             return False
 
         self.__valorChequeEspecial = valor

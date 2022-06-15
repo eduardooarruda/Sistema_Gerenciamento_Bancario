@@ -501,8 +501,8 @@ class App:
 
                 if sentenca == True:
                     if values['sim_cheque_especial'] == True:
-                        self.conta.setValorChequeEspecial(500)
-
+                        x = self.conta.setValorChequeEspecial(500)
+                        print("SELF CONTA",x)
                     # Gravar no Banco
 
                     if isinstance(self.conta, ContaCorrente):
