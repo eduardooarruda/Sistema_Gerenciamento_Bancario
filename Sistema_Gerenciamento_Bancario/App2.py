@@ -125,52 +125,54 @@ class AppTela:
         tipo_conta = None
         extrato = None
 
-        if isinstance(conta, ContaCorrente):
-            print("CONTA COORENTE")
-            tipo_conta = 'Corrente'
-            extrato = session.query(ExtratoContaCorrenteDB).filter_by(
-                idConta=usuario.id).all()
-        elif isinstance(conta, ContaPoupanca):
-            print("CONTA POUNCAPPA")
-            tipo_conta = 'Poupança'
-            extrato = session.query(ExtratoContaPoupancaDB).filter_by(
-                idConta=usuario.id).all()
+        try:
+            if isinstance(conta, ContaCorrente):
+                print("CONTA COORENTE")
+                tipo_conta = 'Corrente'
+                extrato = session.query(ExtratoContaCorrenteDB).filter_by(
+                    idConta=usuario.id).all()
+            elif isinstance(conta, ContaPoupanca):
+                print("CONTA POUNCAPPA")
+                tipo_conta = 'Poupança'
+                extrato = session.query(ExtratoContaPoupancaDB).filter_by(
+                    idConta=usuario.id).all()
+        finally:
 
-        layout_esquerda = [
-            [sg.Text('Extrato')],
-            [sg.Text(f'Agência: {usuario.agencia}')],
-            [sg.Text(f'Número da conta: {usuario.numeroConta}')],
-            [sg.Text(f'Nome: {usuario.nome}')],
-            [sg.Text(f'tipo da conta: {tipo_conta}')],
-            [sg.Text(f'Número da conta: {usuario.numeroConta}')],
-        ]
+            layout_esquerda = [
+                [sg.Text('Extrato')],
+                [sg.Text(f'Agência: {usuario.agencia}')],
+                [sg.Text(f'Número da conta: {usuario.numeroConta}')],
+                [sg.Text(f'Nome: {usuario.nome}')],
+                [sg.Text(f'tipo da conta: {tipo_conta}')],
+                [sg.Text(f'Número da conta: {usuario.numeroConta}')],
+            ]
 
-        layout_direita = [
+            layout_direita = [
 
-        ]
+            ]
 
 
-        if extrato:
-            print("ENTROU")
-            layout_direita.append([sg.Text('Data'), sg.Text('Tipo de operação'), sg.Text(
-                'Saldo anterior'), sg.Text('Saldo Novo')])
+            if extrato:
+                # print("ENTROU")
+                layout_direita.append([sg.Text('Data'), sg.Text('Tipo de operação'), sg.Text(
+                    'Saldo anterior'), sg.Text('Saldo Novo')])
 
-        for operacao in extrato:
-            layout_direita.append([sg.Text(f'{operacao.data}'), sg.Text(f'{operacao.tipo_operacao}'), sg.Text(
-                f'{operacao.saldo_anterior}'), sg.Text(f'{operacao.saldo_novo}')])
-        
-        layout_direita.append([sg.Button('OK')])
+            for operacao in extrato:
+                layout_direita.append([sg.Text(f'{operacao.data}'), sg.Text(f'{operacao.tipo_operacao}'), sg.Text(
+                    f'{operacao.saldo_anterior}'), sg.Text(f'{operacao.saldo_novo}')])
+            
+            layout_direita.append([sg.Button('OK')])
 
-        layout = [
-            [sg.Column(layout_esquerda), sg.VSeparator(),
-            sg.Column(layout_direita)]
-        ]
+            layout = [
+                [sg.Column(layout_esquerda), sg.VSeparator(),
+                sg.Column(layout_direita)]
+            ]
 
-        self.window = sg.Window(
-            'Sistema de Gerenciamento Bancário', layout = layout)
+            self.window = sg.Window(
+                'Sistema de Gerenciamento Bancário', layout = layout)
 
-        
-        return self.window.Read()
+            
+            return self.window.Read()
         
     def tipo_funcionario(self):
         self.layout = [
@@ -310,24 +312,27 @@ class App:
         return True
 
     def validar_login(self, cpf, senha):
+       
         if cpf == '' or senha == '':
             sg.Popup('ERRO: CPF ou Senha inválida!')
             return False
 
         if isinstance(self.conta, ContaCorrente):
             usuario = session.query(ContaCorrenteDB).filter_by(cpf=cpf).first()
+    
         elif isinstance(self.conta, ContaPoupanca):
             usuario = session.query(ContaPoupancaDB).filter_by(cpf=cpf).first()
+            
         if not usuario:
             sg.Popup('ERRO: CPF inválido!')
-            return False
+            return False     
 
         if usuario.senha != senha:
             sg.Popup('ERRO: Senha inválida!')
             return False
 
         self.usuarioLogado = usuario
-        # print('SALDO DO USUARIO LOGADO', self.usuarioLogado.saldo)
+     
         return True
 
     def validar_saque(self,  valor):
@@ -426,7 +431,7 @@ class App:
 
         return True
     
-    def validar_login(self, numero, senha):
+    def validar_login_funcionario(self, numero, senha):
         if numero == ''.replace(' ', '') == '' or senha.replace(' ', '') == '':
             sg.Popup('ERRO: Número ou Senha inválida!')
             return False
@@ -549,7 +554,7 @@ class App:
                     quit()
 
                 sentenca = self.validar_login(values['cpf'], values['senha'])
-
+                print('sentença', sentenca)
                 if sentenca == True:
                     break
 
@@ -611,7 +616,7 @@ class App:
                 if event == sg.WIN_CLOSED or event == 'Exit':
                     quit()
 
-                sentenca = self.validar_login(values['numero'], values['senha'])
+                sentenca = self.validar_login_funcionario(values['numero'], values['senha'])
 
                 if sentenca == True:
                     break

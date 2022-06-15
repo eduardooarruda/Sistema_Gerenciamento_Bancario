@@ -1,9 +1,9 @@
 from Conta import Conta
+from Emprestimo import Emprestimo
 
-
-class ContaCorrente(Conta):
+class ContaCorrente(Conta, Emprestimo):
     def __init__(self):
-        super().__init__()
+        Conta.__init__(self)
     
     def agencia(self, agencia = '034'):
         self._agencia = agencia

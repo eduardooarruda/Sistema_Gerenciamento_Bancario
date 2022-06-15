@@ -1,10 +1,10 @@
 import datetime
 from Conta import Conta
+from Emprestimo import Emprestimo
 
-
-class ContaPoupanca(Conta):
+class ContaPoupanca(Conta, Emprestimo):
     def __init__(self):
-        super().__init__()
+        Conta.__init__(self)
         # A taxa corresponde a 0,017% por dia
         self._taxa = 0.00017
 
