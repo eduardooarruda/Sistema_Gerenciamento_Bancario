@@ -127,12 +127,10 @@ class AppTela:
 
         try:
             if isinstance(conta, ContaCorrente):
-                print("CONTA COORENTE")
                 tipo_conta = 'Corrente'
                 extrato = session.query(ExtratoContaCorrenteDB).filter_by(
                     idConta=usuario.id).all()
             elif isinstance(conta, ContaPoupanca):
-                print("CONTA POUNCAPPA")
                 tipo_conta = 'Poupança'
                 extrato = session.query(ExtratoContaPoupancaDB).filter_by(
                     idConta=usuario.id).all()
@@ -151,16 +149,28 @@ class AppTela:
 
             ]
 
-
             if extrato:
-                # print("ENTROU")
-                layout_direita.append([sg.Text('Data'), sg.Text('Tipo de operação'), sg.Text(
-                    'Saldo anterior'), sg.Text('Saldo Novo')])
+                cabecalho = ['Data', 'Tipo de operação', 'valor', 'Saldo anterior', 'Saldo Novo', 'Cheque_especial']
 
-            for operacao in extrato:
-                layout_direita.append([sg.Text(f'{operacao.data}'), sg.Text(f'{operacao.tipo_operacao}'), sg.Text(
-                    f'{operacao.saldo_anterior}'), sg.Text(f'{operacao.saldo_novo}')])
-            
+                valores = []
+
+                for operacao in extrato:
+                    valores.append([f'{operacao.data}', f'{operacao.tipo_operacao}',f'{abs(operacao.saldo_anterior-operacao.saldo_novo)}', f'{operacao.saldo_anterior}', f'{operacao.saldo_novo}', f'{usuario.valorChequeEspecial}'])
+                    
+
+                layout_direita.append([sg.Table(
+                    values=valores,
+                    headings=cabecalho,
+                    max_col_width=35,
+                    auto_size_columns=True,
+                    display_row_numbers=True,
+                    justification='right',
+                    num_rows=10,
+                    key='-TABLE-',
+                    row_height=35,
+                    
+                )])
+
             layout_direita.append([sg.Button('OK')])
 
             layout = [
