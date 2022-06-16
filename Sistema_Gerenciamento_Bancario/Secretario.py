@@ -1,6 +1,6 @@
 from Funcionario import Funcionario
 
-class Secretetario(Funcionario):
+class Secretario(Funcionario):
     def __init__(self):
         super().__init__()
     

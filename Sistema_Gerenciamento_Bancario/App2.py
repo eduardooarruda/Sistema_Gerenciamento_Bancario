@@ -3,6 +3,8 @@ from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
 from Gerente import Gerente
 from Diretor import Diretor
+from Caixa import Caixa
+from Secretario import Secretario
 from criarBanco import session, ContaCorrente as ContaCorrenteDB, ExtratoContaCorrente as ExtratoContaCorrenteDB, ContaPoupanca as ContaPoupancaDB, ExtratoContaPoupanca as ExtratoContaPoupancaDB
 from datetime import datetime, timezone, timedelta
 import PySimpleGUI as sg
@@ -229,15 +231,34 @@ class AppTela:
             'Sistema de Gerenciamento Bancário', self.layout, element_justification='c')
         return self.window.Read()
     
-    def tela_cadastrar_funcionario(self):
+    def tela_tipo_funcionario(self):
         self.layout = [
+            [sg.Button('Caixa', size=(25,))],
+            [sg.Button('Direito', size=(25,))],
+            [sg.Button('Gerente', size=(25,))],
             [sg.Button('Secretários', size=(25,))],
-            [sg.Button('Caixa de banco', size=(25,))],
-            [sg.Button('Gerente de Agência', size=(25,))]
         ]
         self.window = sg.Window(
             'Sistema de Gerenciamento Bancário', self.layout, element_justification='c')
         return self.window.Read()
+    
+    def tela_cadastrar_funcionario(self):
+        self.layout = [
+            [sg.Text('Nome:*',  font=("Helvetica", 13))],
+            [sg.Input(key='nome')],
+            [sg.Text('Salário:*', font=("Helvetica", 13))],
+            [sg.Input(key='salario')],
+            [sg.Text('Jornada de trabalho :*',  font=("Helvetica", 13))],
+            [sg.Input(key='jornada')],
+            [sg.Text('Número da Conta:*',  font=("Helvetica", 13))],
+            [sg.Input(key='numerConta')],
+            [sg.Button('Cadastrar')]
+        ]
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', self.layout)
+        return self.window.Read()
+    
+    
 
 
 class App:
@@ -662,11 +683,28 @@ class App:
                     pass
 
                 elif event == 'Cadastrar funcionários':
-                    event, values = self.tela.tela_cadastrar_funcionario()
+                    event, values = self.tela.tela_tipo_funcionario()
                     self.tela.window.Close()
+
+                    funcionario = None
 
                     if event == sg.WIN_CLOSED or event == 'Exit':
                         quit()
+                    if event == 'Caixa':
+                        funcionario = Caixa()
+                    elif event == 'Direito':
+                        funcionario = Diretor()
+                    elif event == 'Gerente':
+                        funcionario = Gerente()
+                    elif event == 'Secretários':
+                        funcionario = Secretario()
+                    
+                    if isinstance(funcionario, (Caixa, Diretor, Gerente, Secretario)):
+                        event, values = self.tela.tela_cadastrar_funcionario()
+                        self.tela.window.Close()
+
+                        if event == sg.WIN_CLOSED or event == 'Exit':
+                            quit()   
 
                 elif event == 'Visualizar funcionários':
                     pass
