@@ -16,7 +16,7 @@ class AppTela:
 
     def tela_inicial(self):
         self.layout = [
-            [sg.Text('Escolhar uma opção:')],
+            [sg.Text('Escolhar uma opção:', font=("Helvetica", 15))],
             [sg.Button('Criar uma conta'), sg.Button('Acessar Conta')],
             [sg.Button('Funcionário', size=(25,))]
         ]
@@ -26,7 +26,7 @@ class AppTela:
 
     def tela_tipo_conta(self):
         self.layout = [
-            [sg.Text('Escolhar o tipo da conta:')],
+            [sg.Text('Escolhar o tipo da conta:', font=("Helvetica", 15))],
             [sg.Button('Corrente'), sg.Button('Poupança')]
         ]
         self.window = sg.Window(
@@ -35,9 +35,9 @@ class AppTela:
 
     def tela_dados_pessoais(self):
         self.layout = [
-            [sg.Text('Nome completo:*')],
+            [sg.Text('Nome completo:*', font=("Helvetica", 13))],
             [sg.Input(key='nome')],
-            [sg.Text('CPF:*')],
+            [sg.Text('CPF:*',  font=("Helvetica", 13))],
             [sg.Text('OBS: O CPF deve está no seguinte formato 000.000.000-00')],
             [sg.Input(key='cpf')],
             [sg.Button('Próximo')]
@@ -48,15 +48,15 @@ class AppTela:
 
     def tela_endereco(self):
         self.layout = [
-            [sg.Text('Estado:*')],
+            [sg.Text('Estado:*',  font=("Helvetica", 13))],
             [sg.Input(key='estado')],
-            [sg.Text('Cidade:*')],
+            [sg.Text('Cidade:*',  font=("Helvetica", 13))],
             [sg.Input(key='cidade')],
-            [sg.Text('Bairro:*')],
+            [sg.Text('Bairro:*', font=("Helvetica", 13))],
             [sg.Input(key='bairro')],
-            [sg.Text('Rua:*')],
+            [sg.Text('Rua:*',  font=("Helvetica", 13))],
             [sg.Input(key='rua')],
-            [sg.Text('Número:*')],
+            [sg.Text('Número:*',  font=("Helvetica", 13))],
             [sg.Input(key='numero')],
             [sg.Button('Próximo')]
         ]
@@ -66,10 +66,10 @@ class AppTela:
 
     def tela_senha_chequeEspecial(self):
         self.layout = [
-            [sg.Text('Senha:*')],
+            [sg.Text('Senha:*', font=("Helvetica", 13))],
             [sg.Text('OBS: A senha deve conter pelo menos 8 caracteres')],
             [sg.Input(key='senha', password_char='*')],
-            [sg.Text('Cheque Especial:*')],
+            [sg.Text('Cheque Especial:*', font=("Helvetica", 13))],
             [sg.Radio('Sim', 'cheque especial', key='sim_cheque_especial'), sg.Radio(
                 'Não', 'cheque especial', key='nao_cheque_especial')],
             [sg.Button('Finalizar')]
@@ -80,10 +80,10 @@ class AppTela:
 
     def tela_login(self):
         self.layout = [
-            [sg.Text('Faça o login')],
-            [sg.Text('CPF:')],
+            [sg.Text('Faça o login', font=("Helvetica", 15))],
+            [sg.Text('CPF:', font=("Helvetica", 13))],
             [sg.Input(key='cpf')],
-            [sg.Text('Senha:')],
+            [sg.Text('Senha:', font=("Helvetica", 13))],
             [sg.Input(key='senha', password_char='*')],
             [sg.Button('Entrar')]
         ]
@@ -91,19 +91,22 @@ class AppTela:
             'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
 
-    def tela_operacoes_conta(self):
+    def tela_operacoes_conta(self, usuario):
         self.layout = [
-            [sg.Text('Escolha dentre as operações')],
+            [sg.Image(filename='imagens\\user.png')],
+            [sg.Text(f'Seja bem-vindo, {usuario.nome}',font=("Helvetica", 25))],
+            [sg.Text(f'Saldo: {usuario.saldo}',font=("Helvetica", 20))],
+            [sg.Text('Escolha dentre as operações', font=("Helvetica", 13))],
             [sg.Button('Sacar'), sg.Button('Depositar'),
              sg.Button('Extrato'), sg.Button('Voltar')]
         ]
         self.window = sg.Window(
-            'Sistema de Gerenciamento Bancário', self.layout)
+            'Sistema de Gerenciamento Bancário', self.layout, element_justification='c')
         return self.window.Read()
 
     def tela_sacar(self):
         self.layout = [
-            [sg.Text('Digite o valor a ser sacado:*')],
+            [sg.Text('Digite o valor a ser sacado:*', font=("Helvetica", 13))],
             [sg.Input(key='saque')],
             [sg.Button('Sacar')]
         ]
@@ -113,7 +116,7 @@ class AppTela:
 
     def tela_depositar(self):
         self.layout = [
-            [sg.Text('Digite o valor a ser depositado:*')],
+            [sg.Text('Digite o valor a ser depositado:*', font=("Helvetica", 13))],
             [sg.Input(key='deposito')],
             [sg.Button('Depositar')]
         ]
@@ -141,8 +144,7 @@ class AppTela:
                 [sg.Text(f'Agência: {usuario.agencia}')],
                 [sg.Text(f'Número da conta: {usuario.numeroConta}')],
                 [sg.Text(f'Nome: {usuario.nome}')],
-                [sg.Text(f'tipo da conta: {tipo_conta}')],
-                [sg.Text(f'Número da conta: {usuario.numeroConta}')],
+                [sg.Text(f'tipo da conta: {tipo_conta}')]
             ]
 
             layout_direita = [
@@ -150,12 +152,12 @@ class AppTela:
             ]
 
             if extrato:
-                cabecalho = ['Data', 'Tipo de operação', 'valor', 'Saldo anterior', 'Saldo Novo', 'Cheque_especial']
+                cabecalho = ['Data', 'Tipo de operação', 'valor', 'Saldo Novo', 'Cheque_especial']
 
                 valores = []
 
                 for operacao in extrato:
-                    valores.append([f'{operacao.data}', f'{operacao.tipo_operacao}',f'{abs(operacao.saldo_anterior-operacao.saldo_novo)}', f'{operacao.saldo_anterior}', f'{operacao.saldo_novo}', f'{usuario.valorChequeEspecial}'])
+                    valores.append([f'{operacao.data}', f'{operacao.tipo_operacao}',f'{abs(operacao.saldo_anterior-operacao.saldo_novo)}', f'{operacao.saldo_novo}', f'{usuario.valorChequeEspecial}'])
                     
 
                 layout_direita.append([sg.Table(
@@ -502,7 +504,7 @@ class App:
                 if sentenca == True:
                     if values['sim_cheque_especial'] == True:
                         x = self.conta.setValorChequeEspecial(500)
-                        print("SELF CONTA",x)
+                       
                     # Gravar no Banco
 
                     if isinstance(self.conta, ContaCorrente):
@@ -569,7 +571,7 @@ class App:
                     break
 
             while True:
-                event, values = self.tela.tela_operacoes_conta()
+                event, values = self.tela.tela_operacoes_conta(self.usuarioLogado)
                 self.tela.window.Close()
                 if event == sg.WIN_CLOSED or event == 'Exit':
                     quit()
