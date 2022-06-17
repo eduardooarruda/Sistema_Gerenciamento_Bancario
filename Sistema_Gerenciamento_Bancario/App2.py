@@ -296,6 +296,144 @@ class AppTela:
 
         
         return self.window.Read()
+
+    def tela_visualizar_contas_gerente(self): 
+
+        layout_esquerda = [
+
+        ]
+
+        layout_direita = [
+
+        ]
+
+        todas_contas_corrente = session.query(ContaCorrenteDB).all()
+        todas_contas_poupanca = session.query(ContaPoupancaDB).all()
+
+        cabecalho = ['Nome', 'Número', 'Saldo', 'Cheque especial', 'Empréstimo']
+
+        valores_conta_corrente = []
+        valores_conta_poupanca = []
+
+        for conta_coorente in todas_contas_corrente:
+            emprestimo = str(session.query(EmprestimoContaCorrenteDB).filter_by(
+                    id_conta_corrente=conta_coorente.id).all())
+            emprestimo = str(emprestimo) if emprestimo != '[]' else ''
+            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}',f'{conta_coorente.valorChequeEspecial}', emprestimo])
+
+        for conta_poupanca in todas_contas_poupanca:
+            emprestimo = str(session.query(EmprestimoContaPoupancaDB).filter_by(id_conta_poupanca=conta_coorente.id).all())
+            emprestimo = str(emprestimo) if emprestimo != '[]' else ''
+            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}',f'{conta_poupanca.valorChequeEspecial}', emprestimo])
+            
+
+        layout_esquerda.append([sg.Table(
+            values=valores_conta_corrente,
+            headings=cabecalho,
+            max_col_width=35,
+            auto_size_columns=True,
+            display_row_numbers=True,
+            justification='right',
+            num_rows=10,
+            key='-TABLE-',
+            row_height=35,
+            
+        )])
+
+        layout_direita.append([sg.Table(
+            values=valores_conta_poupanca,
+            headings=cabecalho,
+            max_col_width=35,
+            auto_size_columns=True,
+            display_row_numbers=True,
+            justification='right',
+            num_rows=10,
+            key='-TABLE-',
+            row_height=35,
+            
+        )])
+
+        layout = [
+            [sg.Column(layout_esquerda), sg.VSeparator(),
+            sg.Column(layout_direita)]
+        ]
+
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', layout = layout, element_justification='c')
+        
+        return self.window.Read()
+
+    def tela_visualizar_contas_direitor(self): 
+
+        layout_esquerda = [
+
+        ]
+
+        layout_direita = [
+
+        ]
+
+        todas_contas_corrente = session.query(ContaCorrenteDB).all()
+        todas_contas_poupanca = session.query(ContaPoupancaDB).all()
+
+        cabecalho = ['Nome', 'CPF', 'Número', 'Saldo', 'Empréstimo']
+
+        valores_conta_corrente = []
+        valores_conta_poupanca = []
+
+        for conta_coorente in todas_contas_corrente:
+            emprestimo = str(session.query(EmprestimoContaCorrenteDB).filter_by(
+                    id_conta_corrente=conta_coorente.id).all())
+            emprestimo = 'Sim' if emprestimo != '[]' else 'Não'
+            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.cpf}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}', emprestimo])
+
+        for conta_poupanca in todas_contas_poupanca:
+            emprestimo = str(session.query(EmprestimoContaPoupancaDB).filter_by(
+                    id_conta_poupanca=conta_coorente.id).all())
+            emprestimo = 'Sim' if emprestimo != '[]' else 'Não'
+            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.cpf}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}', emprestimo])
+            
+
+        layout_esquerda.append([sg.Table(
+            values=valores_conta_corrente,
+            headings=cabecalho,
+            max_col_width=35,
+            auto_size_columns=True,
+            display_row_numbers=True,
+            justification='right',
+            num_rows=10,
+            key='-TABLE-',
+            row_height=35,
+            
+        )])
+
+        layout_direita.append([sg.Table(
+            values=valores_conta_poupanca,
+            headings=cabecalho,
+            max_col_width=35,
+            auto_size_columns=True,
+            display_row_numbers=True,
+            justification='right',
+            num_rows=10,
+            key='-TABLE-',
+            row_height=35,
+            
+        )])
+
+        layout = [
+            [sg.Column(layout_esquerda), sg.VSeparator(),
+            sg.Column(layout_direita)]
+        ]
+
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', layout = layout, element_justification='c')
+        
+        return self.window.Read()
+        
+
+
+        
+
     
 
 
@@ -742,72 +880,76 @@ class App:
                     break
             
             if isinstance(self.usuarioLogado, Gerente):
-                # print("Gerente")
-                event, values = self.tela.tela_funcoes_gerente()
-                self.tela.window.Close()
-
-                if event == sg.WIN_CLOSED or event == 'Exit':
-                    quit()
-
-                if event == 'Emprestimo':
-                    pass
-                elif event == 'Criar Conta':
-                    self.run()
-                elif event == 'Visualizar contas':
-                    pass
-            elif isinstance(self.usuarioLogado, Diretor):
-                # print("Diretor")
-                event, values = self.tela.tela_funcoes_diretor()
-                self.tela.window.Close()
-
-                if event == sg.WIN_CLOSED or event == 'Exit':
-                    quit()
-
-                if event == 'Emprestimo':
-                    pass
-
-                elif event == 'Visualizar contas':
-                    pass
-
-                elif event == 'Cadastrar funcionários':
-                    event, values = self.tela.tela_tipo_funcionario()
+                while True:
+                    
+                    event, values = self.tela.tela_funcoes_gerente()
                     self.tela.window.Close()
-                    funcionario = None
+
                     if event == sg.WIN_CLOSED or event == 'Exit':
                         quit()
-                    if event == 'Caixa':
-                        funcionario = Caixa()
-                        funcionario.setCargoAtual('Caixa')
-                    elif event == 'Direito':
-                        funcionario = Diretor()
-                        funcionario.setCargoAtual('Diretor')
-                    elif event == 'Gerente':
-                        funcionario = Gerente()
-                        funcionario.setCargoAtual('Gerente')
-                    elif event == 'Secretários':
-                        funcionario = Secretario()
-                        funcionario.setCargoAtual('Secretário')
-                    
-                    if isinstance(funcionario, (Caixa, Diretor, Gerente, Secretario)):
-                        while True:
-                            funcionario.setBeneficios()
-                            event, values = self.tela.tela_cadastrar_funcionario()
-                            self.tela.window.Close()
-                            
-                            if event == sg.WIN_CLOSED or event == 'Exit':
-                                quit()
-                            
-                            sentenca = self.validar_cadastro_funcionario(values['nome'],values['salario'], values['jornada'], values['numeroConta'], funcionario)
 
-                            if sentenca == True:
-                                break
-                        
-                    
-                          
-
-                elif event == 'Visualizar funcionários':
-                    event, values = self.tela.tela_visualizar_funcionarios()
+                    if event == 'Emprestimo':
+                        pass
+                    elif event == 'Criar Conta':
+                        self.run()
+                    elif event == 'Visualizar contas':
+                        event, values = self.tela.tela_visualizar_contas_gerente()
+                        self.tela.window.Close()
+            elif isinstance(self.usuarioLogado, Diretor):
+                
+                while True:
+                    event, values = self.tela.tela_funcoes_diretor()
                     self.tela.window.Close()
+
+                    if event == sg.WIN_CLOSED or event == 'Exit':
+                        quit()
+
+                    if event == 'Emprestimo':
+                        pass
+
+                    elif event == 'Visualizar contas':
+                        event, values = self.tela.tela_visualizar_contas_direitor()
+                        self.tela.window.Close()
+
+                    elif event == 'Cadastrar funcionários':
+                        event, values = self.tela.tela_tipo_funcionario()
+                        self.tela.window.Close()
+                        funcionario = None
+                        # if event == sg.WIN_CLOSED or event == 'Exit':
+                        #     quit()
+                        if event == 'Caixa':
+                            funcionario = Caixa()
+                            funcionario.setCargoAtual('Caixa')
+                        elif event == 'Direito':
+                            funcionario = Diretor()
+                            funcionario.setCargoAtual('Diretor')
+                        elif event == 'Gerente':
+                            funcionario = Gerente()
+                            funcionario.setCargoAtual('Gerente')
+                        elif event == 'Secretários':
+                            funcionario = Secretario()
+                            funcionario.setCargoAtual('Secretário')
+                        
+                        if isinstance(funcionario, (Caixa, Diretor, Gerente, Secretario)):
+                            while True:
+                                funcionario.setBeneficios()
+                                event, values = self.tela.tela_cadastrar_funcionario()
+                                self.tela.window.Close()
+                                
+                                if event == sg.WIN_CLOSED or event == 'Exit':
+                                   break
+                                
+                                sentenca = self.validar_cadastro_funcionario(values['nome'],values['salario'], values['jornada'], values['numeroConta'], funcionario)
+
+                                if sentenca == True:
+                                    break
+                            
+                        
+                            
+
+                    elif event == 'Visualizar funcionários':
+                        event, values = self.tela.tela_visualizar_funcionarios()
+                        self.tela.window.Close()
 
             
 if __name__ == '__main__':
