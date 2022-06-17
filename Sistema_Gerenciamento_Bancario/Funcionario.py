@@ -1,27 +1,31 @@
 from Endereco import Endereco
 from ContaCorrente import ContaCorrente
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from abc import ABC, abstractmethod
+from random import randrange
 
 class Funcionario(ABC):
     def __init__(self):
         self.__nome = None
         self.__cargoAtual = None
         self._salario = None
-        self.__horario = None
-        self.__beneficios = None
-        self.__dataAdmissao = self.__setDataAdmissao()
-        self.__numero = '1234'
+        self.__jornada = None
+        self._beneficios = None
+        self.__dataAdmissao = self.__criarDataAdmissao()
+        self.__numero_funcioanario = randrange(100000, 999999)
         self.__conta = ContaCorrente()
-        self.__endereco = Endereco()
+
 
     
     @property
-    def getHorario(self):
-        return self.__horario
+    def getJornada(self):
+        return self.__jornada
 
-    def setHorario(self, horario):
-        self.__horario = horario      
+    def setJornada(self, jornada):
+        if jornada.replace(" ", "") == '':
+            return False
+        self.__jornada = jornada
+        return True      
 
     @property
     def getNome(self):
@@ -50,9 +54,12 @@ class Funcionario(ABC):
     def setSalario(self, salario):
         try:
             self._salario = float(salario)
+            if salario.replace(' ', '') == '':
+                return False
             return True
         except ValueError:
-            return False 
+            return False
+        
 
     @abstractmethod
     def setBeneficios(self):
@@ -60,19 +67,18 @@ class Funcionario(ABC):
 
     @property
     def getBeneficios(self):
-        return self.__beneficios
+        return self._beneficios
             
 
     @property
     def getDataAdimissao(self):
         return self.__dataAdmissao
 
-    def __setDataAdmissao(self):
-        data_atual = datetime.now()
-        diferenca = timedelta(hours=-3)
-        fuso_horario = timezone(diferenca)
-        data = data_atual.astimezone(fuso_horario)
-        data = data.strftime('%d/%m/%Y %H:%M:%S')
-        data_atual = datetime.strptime(data, '%d/%m/%Y %H:%M:%S')
+    def __criarDataAdmissao(self):
+        data_atual = datetime.today()
         return data_atual
+    
+    @property
+    def getNumero(self):
+        return self.__numero_funcioanario
     

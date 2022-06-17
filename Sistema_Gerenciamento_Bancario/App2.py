@@ -1,3 +1,4 @@
+from sqlalchemy import Float, true
 from Endereco import Endereco
 from ContaPoupanca import ContaPoupanca
 from ContaCorrente import ContaCorrente
@@ -5,7 +6,7 @@ from Gerente import Gerente
 from Diretor import Diretor
 from Caixa import Caixa
 from Secretario import Secretario
-from criarBanco import session, ContaCorrente as ContaCorrenteDB, ExtratoContaCorrente as ExtratoContaCorrenteDB, ContaPoupanca as ContaPoupancaDB, ExtratoContaPoupanca as ExtratoContaPoupancaDB
+from criarBanco import session, ContaCorrente as ContaCorrenteDB, ExtratoContaCorrente as ExtratoContaCorrenteDB, ContaPoupanca as ContaPoupancaDB, ExtratoContaPoupanca as ExtratoContaPoupancaDB, Funcionario as FuncionarioDB, Beneficios as BeneficiosDB, EmprestimoContaPoupanca as EmprestimoContaPoupancaDB, EmprestimoContaCorrente as EmprestimoContaCorrenteDB
 from datetime import datetime, timezone, timedelta
 import PySimpleGUI as sg
 sg.theme('DarkAmber')
@@ -250,8 +251,8 @@ class AppTela:
             [sg.Input(key='salario')],
             [sg.Text('Jornada de trabalho :*',  font=("Helvetica", 13))],
             [sg.Input(key='jornada')],
-            [sg.Text('Número da Conta:*',  font=("Helvetica", 13))],
-            [sg.Input(key='numerConta')],
+            [sg.Text('Número da conta corrente:*',  font=("Helvetica", 13))],
+            [sg.Input(key='numeroConta')],
             [sg.Button('Cadastrar')]
         ]
         self.window = sg.Window(
@@ -471,6 +472,55 @@ class App:
         
         return True
 
+    def validar_cadastro_funcionario(w,nome, salario, jornada, numeroConta, funcionario):
+        print("Nome", nome)
+        print("Salario", salario)
+        print("Jornada", jornada)
+        print("Numero Conta", numeroConta)
+        print("FUNCIONARIO",funcionario)
+
+        if not funcionario.setNome(nome):
+            sg.Popup('Nome inválido!')
+            return False
+
+        if not funcionario.setSalario(salario):
+            sg.Popup('Salário inválido!')
+            return False
+
+        
+        if not funcionario.setJornada(jornada):
+            sg.Popup('jornada inválida!')
+            return False
+        
+        if numeroConta == ''.replace(' ', ''):
+            sg.Popup('número da conta corrente inválido!')
+            return False
+
+        pesquisarNumero = session.query(ContaCorrenteDB).filter_by(numeroConta = numeroConta).first()
+
+        if pesquisarNumero == None:
+            sg.Popup('número da conta corrente inválido!')
+            return False
+
+
+       
+        funcionarioDB = FuncionarioDB(
+            nome = funcionario.getNome,
+            cargo_atual = funcionario.getCargoAtual,
+            salario = funcionario.getSalario,
+            jornada = funcionario.getJornada,
+            numeroContaCorrente = numeroConta,
+            data_adimissao = funcionario.getDataAdimissao,
+            numero = funcionario.getNumero
+        )
+
+        session.add(funcionarioDB)
+        session.commit()
+
+        return True
+        
+        
+
     def run(self):
         event, values = self.tela.tela_inicial()
         self.tela.window.Close()
@@ -655,7 +705,7 @@ class App:
                     break
             
             if isinstance(self.usuarioLogado, Gerente):
-                print("Gerente")
+                # print("Gerente")
                 event, values = self.tela.tela_funcoes_gerente()
                 self.tela.window.Close()
 
@@ -669,7 +719,7 @@ class App:
                 elif event == 'Visualizar contas':
                     pass
             elif isinstance(self.usuarioLogado, Diretor):
-                print("Diretor")
+                # print("Diretor")
                 event, values = self.tela.tela_funcoes_diretor()
                 self.tela.window.Close()
 
@@ -685,26 +735,38 @@ class App:
                 elif event == 'Cadastrar funcionários':
                     event, values = self.tela.tela_tipo_funcionario()
                     self.tela.window.Close()
-
                     funcionario = None
-
                     if event == sg.WIN_CLOSED or event == 'Exit':
                         quit()
                     if event == 'Caixa':
                         funcionario = Caixa()
+                        funcionario.setCargoAtual('Caixa')
                     elif event == 'Direito':
                         funcionario = Diretor()
+                        funcionario.setCargoAtual('Diretor')
                     elif event == 'Gerente':
                         funcionario = Gerente()
+                        funcionario.setCargoAtual('Gerente')
                     elif event == 'Secretários':
                         funcionario = Secretario()
+                        funcionario.setCargoAtual('Secretário')
                     
                     if isinstance(funcionario, (Caixa, Diretor, Gerente, Secretario)):
-                        event, values = self.tela.tela_cadastrar_funcionario()
-                        self.tela.window.Close()
+                        while True:
+                            funcionario.setBeneficios()
+                            event, values = self.tela.tela_cadastrar_funcionario()
+                            self.tela.window.Close()
+                            
+                            if event == sg.WIN_CLOSED or event == 'Exit':
+                                quit()
+                            
+                            sentenca = self.validar_cadastro_funcionario(values['nome'],values['salario'], values['jornada'], values['numeroConta'], funcionario)
 
-                        if event == sg.WIN_CLOSED or event == 'Exit':
-                            quit()   
+                            if sentenca == True:
+                                break
+                        
+                    
+                          
 
                 elif event == 'Visualizar funcionários':
                     pass
