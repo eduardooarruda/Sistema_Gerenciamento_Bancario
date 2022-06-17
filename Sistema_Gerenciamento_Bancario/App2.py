@@ -316,15 +316,10 @@ class AppTela:
         valores_conta_poupanca = []
 
         for conta_coorente in todas_contas_corrente:
-            emprestimo = str(session.query(EmprestimoContaCorrenteDB).filter_by(
-                    id_conta_corrente=conta_coorente.id).all())
-            emprestimo = str(emprestimo) if emprestimo != '[]' else ''
-            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}',f'{conta_coorente.valorChequeEspecial}', emprestimo])
+            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}',f'{conta_coorente.valorChequeEspecial}', 'Não'])
 
         for conta_poupanca in todas_contas_poupanca:
-            emprestimo = str(session.query(EmprestimoContaPoupancaDB).filter_by(id_conta_poupanca=conta_coorente.id).all())
-            emprestimo = str(emprestimo) if emprestimo != '[]' else ''
-            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}',f'{conta_poupanca.valorChequeEspecial}', emprestimo])
+            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}',f'{conta_poupanca.valorChequeEspecial}', 'Não'])
             
         layout_esquerda.append([sg.Text('Conta Corrente',font=("Helvetica", 13))])
         layout_esquerda.append([sg.Table(
@@ -383,16 +378,10 @@ class AppTela:
         valores_conta_poupanca = []
 
         for conta_coorente in todas_contas_corrente:
-            emprestimo = str(session.query(EmprestimoContaCorrenteDB).filter_by(
-                    id_conta_corrente=conta_coorente.id).all())
-            emprestimo = 'Sim' if emprestimo != '[]' else 'Não'
-            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.cpf}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}', emprestimo])
+            valores_conta_corrente.append([f'{conta_coorente.nome}', f'{conta_coorente.cpf}', f'{conta_coorente.numeroConta}', f'{conta_coorente.saldo}', 'Não'])
 
         for conta_poupanca in todas_contas_poupanca:
-            emprestimo = str(session.query(EmprestimoContaPoupancaDB).filter_by(
-                    id_conta_poupanca=conta_coorente.id).all())
-            emprestimo = 'Sim' if emprestimo != '[]' else 'Não'
-            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.cpf}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}', emprestimo])
+            valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.cpf}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}', 'Não'])
             
         layout_esquerda.append([sg.Text('Conta Corrente', font=("Helvetica", 13))])
         layout_esquerda.append([sg.Table(

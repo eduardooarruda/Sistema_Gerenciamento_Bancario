@@ -1,11 +1,11 @@
 from datetime import datetime, timezone, timedelta
 from abc import ABC, abstractmethod
 
-class Emprestimo:
+class Emprestimo(ABC):
     def __init__(self):
         self.__data_emprestimo = self.__dataCriacao()
         self.__valor_emprestimo = None
-        self.__taxa_emprestimo = None
+        self._taxa_emprestimo = None
     
     def __dataCriacao(self):
         data_atual = datetime.now()
@@ -34,19 +34,11 @@ class Emprestimo:
         return self.__valor_emprestimo
 
     @abstractmethod
-    def setTaxa(self,tipoUsuario):
+    def setTaxaEmprestimo(self,tipoUsuario):
         pass
-        # try:
-        #     valor = float(taxa)
-        #     if valor > 0:
-        #         self.__taxa = taxa
-        #         return True
-        #     else:
-        #         return False
-        # except ValueError:
-        #     return False
+       
 
-    def getTaxa(self):
+    def getTaxaEmprestimo(self):
         return self.__taxa_emprestimo
     
     

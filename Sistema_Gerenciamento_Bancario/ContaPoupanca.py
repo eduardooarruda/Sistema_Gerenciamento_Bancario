@@ -20,3 +20,9 @@ class ContaPoupanca(Conta, Emprestimo):
 
     def agencia(self, agencia = '039'):
         self._agencia = agencia
+
+    def setTaxaEmprestimo(self, tipo_usuario):
+        if tipo_usuario == 'cliente':
+            self._taxa_emprestimo == 0.20
+            return True
+        return False 
