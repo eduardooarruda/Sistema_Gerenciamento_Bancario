@@ -259,6 +259,43 @@ class AppTela:
             'Sistema de Gerenciamento Bancário', self.layout)
         return self.window.Read()
     
+    def tela_visualizar_funcionarios(self):
+        
+    
+        layout = [
+
+        ]
+
+        todososfuncionarios = session.query(FuncionarioDB).all()
+
+        cabecalho = ['Nome', 'Cargo atual', 'Salário', 'Número', 'Data de admissão']
+
+        valores = []
+
+        for funcionario in todososfuncionarios:
+            valores.append([f'{funcionario.nome}', f'{funcionario.cargo_atual}', f'{funcionario.salario}', f'{funcionario.numero}', f'{funcionario.data_adimissao}'])
+            
+
+        layout.append([sg.Table(
+            values=valores,
+            headings=cabecalho,
+            max_col_width=35,
+            auto_size_columns=True,
+            display_row_numbers=True,
+            justification='right',
+            num_rows=10,
+            key='-TABLE-',
+            row_height=35,
+            
+        )])
+
+        layout.append([sg.Button('OK')])
+
+        self.window = sg.Window(
+            'Sistema de Gerenciamento Bancário', layout = layout)
+
+        
+        return self.window.Read()
     
 
 
@@ -473,11 +510,11 @@ class App:
         return True
 
     def validar_cadastro_funcionario(w,nome, salario, jornada, numeroConta, funcionario):
-        print("Nome", nome)
-        print("Salario", salario)
-        print("Jornada", jornada)
-        print("Numero Conta", numeroConta)
-        print("FUNCIONARIO",funcionario)
+        # print("Nome", nome)
+        # print("Salario", salario)
+        # print("Jornada", jornada)
+        # print("Numero Conta", numeroConta)
+        # print("FUNCIONARIO",funcionario)
 
         if not funcionario.setNome(nome):
             sg.Popup('Nome inválido!')
@@ -769,7 +806,8 @@ class App:
                           
 
                 elif event == 'Visualizar funcionários':
-                    pass
+                    event, values = self.tela.tela_visualizar_funcionarios()
+                    self.tela.window.Close()
 
             
 if __name__ == '__main__':
