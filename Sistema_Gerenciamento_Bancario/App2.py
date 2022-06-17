@@ -326,7 +326,7 @@ class AppTela:
             emprestimo = str(emprestimo) if emprestimo != '[]' else ''
             valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}',f'{conta_poupanca.valorChequeEspecial}', emprestimo])
             
-
+        layout_esquerda.append([sg.Text('Conta Corrente',font=("Helvetica", 13))])
         layout_esquerda.append([sg.Table(
             values=valores_conta_corrente,
             headings=cabecalho,
@@ -340,6 +340,7 @@ class AppTela:
             
         )])
 
+        layout_direita.append([sg.Text('Conta Poupança', font=("Helvetica", 13))])
         layout_direita.append([sg.Table(
             values=valores_conta_poupanca,
             headings=cabecalho,
@@ -393,7 +394,7 @@ class AppTela:
             emprestimo = 'Sim' if emprestimo != '[]' else 'Não'
             valores_conta_poupanca.append([f'{conta_poupanca.nome}', f'{conta_poupanca.cpf}', f'{conta_poupanca.numeroConta}', f'{conta_poupanca.saldo}', emprestimo])
             
-
+        layout_esquerda.append([sg.Text('Conta Corrente', font=("Helvetica", 13))])
         layout_esquerda.append([sg.Table(
             values=valores_conta_corrente,
             headings=cabecalho,
@@ -407,6 +408,7 @@ class AppTela:
             
         )])
 
+        layout_direita.append([sg.Text('Conta Poupança', font=("Helvetica", 13))])
         layout_direita.append([sg.Table(
             values=valores_conta_poupanca,
             headings=cabecalho,

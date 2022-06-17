@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import unique
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, ForeignKey, Date
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from datetime import datetime
 
 engine = create_engine('sqlite:///banco.db', echo=True)
 
@@ -112,3 +113,35 @@ class Beneficios(Base):
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    #Para inserir o diretor geral
+    conta_corrente_gerente_geral = ContaCorrente(
+        numeroConta='00000001-9',
+        saldo=20000,
+        agencia='99',
+        valorChequeEspecial=10000,
+        nome='Estevão',
+        cpf='123.456.789-99',
+        senha='12345678',
+        estado='Minas Gerais',
+        cidade='Virgínia',
+        bairro='São Pedro',
+        rua='Santa Terezinha',
+        numeroEndereco='45',
+        data_criacao=datetime.now(),
+    )
+
+    session.add(conta_corrente_gerente_geral)
+    session.commit()
+
+    funcionario_diretor_geral= Funcionario(
+            nome = 'Estevão',
+            cargo_atual = 'Diretor geral',
+            salario = 30000,
+            jornada = '8h até 12h e 13h até 17h',
+            numeroContaCorrente = '0000001-9',
+            data_adimissao = datetime.now(),
+            numero = '12345678'
+    )
+
+    session.add(funcionario_diretor_geral)
+    session.commit()
